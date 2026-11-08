@@ -1,0 +1,49 @@
+@import "tailwindcss";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+
+/* Tema Auren — espelha Design System/Auren-tokens.json */
+@theme {
+  --color-forest: #173f36;
+  --color-ink: #203b34;
+  --color-muted: #60736b;
+  --color-paper: #f6f5f0;
+  --color-line: #dce3db;
+  --color-sage: #e6ede4;
+  --color-gold: #b99b67;
+  --color-sand: #eee7d9;
+  --color-red: #a43f3f;
+  --color-rose: #f9eaea;
+  --color-amber: #785719;
+  --color-warning: #faf0d9;
+  --color-blue: #345e82;
+  --color-info: #eaf1f7;
+  --color-disabled: #e8ebe6;
+
+  --font-display: Georgia, "Times New Roman", serif;
+  --font-interface: "Inter", system-ui, sans-serif;
+
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-feature: 16px;
+
+  --breakpoint-tablet: 48rem; /* 768px */
+  --breakpoint-desktop: 75rem; /* 1200px */
+}
+
+@layer base {
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-interface);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+  }
+}

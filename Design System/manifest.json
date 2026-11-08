@@ -1,0 +1,443 @@
+[
+  {
+    "screen": "Entrar",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 242
+  },
+  {
+    "screen": "Agenda",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 271
+  },
+  {
+    "screen": "Agendar",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 350
+  },
+  {
+    "screen": "Agendado",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 415
+  },
+  {
+    "screen": "Detalhe",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 441
+  },
+  {
+    "screen": "Editor",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 478
+  },
+  {
+    "screen": "Rascunho salvo",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 516
+  },
+  {
+    "screen": "Publicar",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 542
+  },
+  {
+    "screen": "Publicado",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 569
+  },
+  {
+    "screen": "Detalhe publicado",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 595
+  },
+  {
+    "screen": "Laudos",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 631
+  },
+  {
+    "screen": "Leitura equipe",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 676
+  },
+  {
+    "screen": "Conflito",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 709
+  },
+  {
+    "screen": "Cancelar",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 774
+  },
+  {
+    "screen": "Cancelado",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 801
+  },
+  {
+    "screen": "Portal",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 827
+  },
+  {
+    "screen": "Meus exames",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 876
+  },
+  {
+    "screen": "Meus laudos",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 915
+  },
+  {
+    "screen": "Laudo paciente",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 954
+  },
+  {
+    "screen": "Sem exames",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 988
+  },
+  {
+    "screen": "Acesso restrito",
+    "viewport": "Desktop",
+    "width": 1440,
+    "height": 1080,
+    "id": 1013
+  },
+  {
+    "screen": "Entrar",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1039
+  },
+  {
+    "screen": "Agenda",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1059
+  },
+  {
+    "screen": "Agendar",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1129
+  },
+  {
+    "screen": "Agendado",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1185
+  },
+  {
+    "screen": "Detalhe",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1202
+  },
+  {
+    "screen": "Editor",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1230
+  },
+  {
+    "screen": "Rascunho salvo",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1259
+  },
+  {
+    "screen": "Publicar",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1276
+  },
+  {
+    "screen": "Publicado",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1294
+  },
+  {
+    "screen": "Detalhe publicado",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1311
+  },
+  {
+    "screen": "Laudos",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1338
+  },
+  {
+    "screen": "Leitura equipe",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1374
+  },
+  {
+    "screen": "Conflito",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1398
+  },
+  {
+    "screen": "Cancelar",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1454
+  },
+  {
+    "screen": "Cancelado",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1472
+  },
+  {
+    "screen": "Portal",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1489
+  },
+  {
+    "screen": "Meus exames",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1529
+  },
+  {
+    "screen": "Meus laudos",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1559
+  },
+  {
+    "screen": "Laudo paciente",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1589
+  },
+  {
+    "screen": "Sem exames",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1614
+  },
+  {
+    "screen": "Acesso restrito",
+    "viewport": "Tablet",
+    "width": 834,
+    "height": 1080,
+    "id": 1632
+  },
+  {
+    "screen": "Entrar",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 1651
+  },
+  {
+    "screen": "Agenda",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 1671
+  },
+  {
+    "screen": "Agendar",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 1731
+  },
+  {
+    "screen": "Agendado",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 1787
+  },
+  {
+    "screen": "Detalhe",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 1804
+  },
+  {
+    "screen": "Editor",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 1832
+  },
+  {
+    "screen": "Rascunho salvo",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 1861
+  },
+  {
+    "screen": "Publicar",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 1878
+  },
+  {
+    "screen": "Publicado",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 1896
+  },
+  {
+    "screen": "Detalhe publicado",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 1913
+  },
+  {
+    "screen": "Laudos",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 1940
+  },
+  {
+    "screen": "Leitura equipe",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 1976
+  },
+  {
+    "screen": "Conflito",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 2000
+  },
+  {
+    "screen": "Cancelar",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 2056
+  },
+  {
+    "screen": "Cancelado",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 2074
+  },
+  {
+    "screen": "Portal",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 2091
+  },
+  {
+    "screen": "Meus exames",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 2131
+  },
+  {
+    "screen": "Meus laudos",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 2161
+  },
+  {
+    "screen": "Laudo paciente",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 2191
+  },
+  {
+    "screen": "Sem exames",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 2216
+  },
+  {
+    "screen": "Acesso restrito",
+    "viewport": "Mobile",
+    "width": 390,
+    "height": 1080,
+    "id": 2234
+  }
+]

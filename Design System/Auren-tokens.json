@@ -1,0 +1,46 @@
+{
+  "color": {
+    "forest": "#173F36",
+    "ink": "#203B34",
+    "muted": "#60736B",
+    "paper": "#F6F5F0",
+    "white": "#FFFFFF",
+    "line": "#DCE3DB",
+    "sage": "#E6EDE4",
+    "gold": "#B99B67",
+    "sand": "#EEE7D9",
+    "red": "#A43F3F",
+    "rose": "#F9EAEA",
+    "amber": "#785719",
+    "warning": "#FAF0D9",
+    "blue": "#345E82",
+    "info": "#EAF1F7",
+    "disabled": "#E8EBE6"
+  },
+  "font": {
+    "display": "Georgia",
+    "interface": "Inter"
+  },
+  "space": [
+    4,
+    8,
+    12,
+    16,
+    24,
+    32,
+    48,
+    64
+  ],
+  "radius": {
+    "control": 8,
+    "card": 12,
+    "feature": 16
+  },
+  "controlHeight": 48,
+  "breakpoints": {
+    "mobile": 0,
+    "tablet": 768,
+    "desktop": 1200
+  },
+  "timezone": "America/Sao_Paulo"
+}

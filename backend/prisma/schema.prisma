@@ -1,0 +1,87 @@
+// Prisma schema — Auren (agendamento de exames e laudos)
+// Timezone de referência para toda a aplicação: America/Sao_Paulo (ver src/lib/timezone.ts)
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum Role {
+  CLINIC
+  PATIENT
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CANCELLED
+}
+
+enum ReportStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role
+  createdAt    DateTime @default(now())
+
+  appointmentsAsPatient Appointment[] @relation("PatientAppointments")
+  appointmentsCreated   Appointment[] @relation("CreatedByStaff")
+
+  @@index([role])
+}
+
+model ExamType {
+  id   String @id @default(cuid())
+  name String @unique
+
+  appointments Appointment[]
+}
+
+model Appointment {
+  id          String            @id @default(cuid())
+  patientId   String
+  patient     User              @relation("PatientAppointments", fields: [patientId], references: [id])
+  examTypeId  String
+  examType    ExamType          @relation(fields: [examTypeId], references: [id])
+  scheduledAt DateTime
+  status      AppointmentStatus @default(SCHEDULED)
+  // Igual a scheduledAt.toISOString() enquanto SCHEDULED; vira null ao cancelar.
+  // Constraint única no banco garante, mesmo sob concorrência, que nunca existam
+  // dois agendamentos ativos no mesmo horário (NULLs não colidem em UNIQUE).
+  slotKey     String?           @unique
+  createdById String
+  createdBy   User              @relation("CreatedByStaff", fields: [createdById], references: [id])
+  cancelledAt DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  report Report?
+
+  @@index([patientId])
+  @@index([scheduledAt])
+  @@index([status])
+}
+
+model Report {
+  id               String       @id @default(cuid())
+  appointmentId    String       @unique
+  appointment      Appointment  @relation(fields: [appointmentId], references: [id])
+  title            String
+  content          String
+  professionalName String
+  status           ReportStatus @default(DRAFT)
+  publishedAt      DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([status])
+}
