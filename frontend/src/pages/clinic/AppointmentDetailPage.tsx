@@ -71,7 +71,7 @@ export function AppointmentDetailPage() {
             {appointment.patient.name} · {formatCivilDateLong(appointment.date)} às {appointment.time}
           </p>
         </div>
-        <AppointmentStatusBadge status={appointment.status} hasPublishedReport={report?.status === "PUBLISHED"} />
+        <AppointmentStatusBadge status={appointment.status} reportStatus={report?.status} />
       </div>
 
       {notice ? (

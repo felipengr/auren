@@ -245,4 +245,48 @@ describe("reports", () => {
     expect(response.statusCode).toBe(404);
     expect(response.body).not.toContain("Dados do paciente A");
   });
+
+  it("lets the clinic list all reports, filterable by status", async () => {
+    const { patient, examType, clinicCookie } = await setup();
+
+    const draftAppointment = await scheduleAppointment(clinicCookie, patient.id, examType.id, "12:00");
+    await app.inject({
+      method: "POST",
+      url: `/api/appointments/${draftAppointment}/report`,
+      headers: { cookie: clinicCookie },
+      payload: { title: "Rascunho", content: "c", professionalName: "Dr. Teste" },
+    });
+
+    const publishedAppointment = await scheduleAppointment(clinicCookie, patient.id, examType.id, "12:30");
+    const publishedReport = await app.inject({
+      method: "POST",
+      url: `/api/appointments/${publishedAppointment}/report`,
+      headers: { cookie: clinicCookie },
+      payload: { title: "Publicado", content: "c", professionalName: "Dr. Teste" },
+    });
+    await app.inject({
+      method: "POST",
+      url: `/api/reports/${publishedReport.json().report.id}/publish`,
+      headers: { cookie: clinicCookie },
+    });
+
+    const all = await app.inject({ method: "GET", url: "/api/reports", headers: { cookie: clinicCookie } });
+    expect(all.json().reports).toHaveLength(2);
+
+    const onlyPublished = await app.inject({
+      method: "GET",
+      url: "/api/reports?status=PUBLISHED",
+      headers: { cookie: clinicCookie },
+    });
+    const titles = onlyPublished.json().reports.map((r: { title: string }) => r.title);
+    expect(titles).toEqual(["Publicado"]);
+  });
+
+  it("does not let a patient list all reports", async () => {
+    const { patient } = await setup();
+    const patientCookie = await loginAs(app, patient.email);
+
+    const response = await app.inject({ method: "GET", url: "/api/reports", headers: { cookie: patientCookie } });
+    expect(response.statusCode).toBe(403);
+  });
 });

@@ -1,8 +1,13 @@
 # Auren — Agendamento de exames e laudos
 
 Desafio técnico: aplicação web para uma clínica agendar exames, cadastrar laudos e
-disponibilizá-los para os pacientes. Design baseado no design system "Auren"
-(`Design System/`).
+disponibilizá-los para os pacientes.
+
+Interface baseada no design system "Auren" (`Design System/`) — paleta, tipografia
+(Georgia + Inter), componentes, telas de referência e identidade visual (logo e
+favicon em `Design System/Auren-Logo/`), produzido com o **Codex**. Toda a
+implementação (backend, frontend e testes) foi feita nesta sessão com o
+**Claude Code**.
 
 ## Stack
 
@@ -17,6 +22,34 @@ backend/   API (Fastify + Prisma)
 frontend/  SPA (Vite + React)
 render.yaml, frontend/vercel.json   configuração de deploy
 ```
+
+**Por que monorepo (e não dois repositórios separados):** a prática comum de
+"clean code"/arquitetura é isolar frontend e backend em repositórios próprios
+— cada um com seu ciclo de release, seu dono, seu CI, evoluindo
+independentemente. Isso faz todo sentido quando são times e serviços
+diferentes, com cadências de deploy diferentes. Não é o caso aqui: é uma
+entrega única, de uma pessoa, onde front e back nascem, evoluem e são
+avaliados juntos — e o próprio enunciado pede explicitamente "um repositório
+ou arquivo compactado". Nesse contexto, monorepo ganha na prática:
+
+- **Um clone, uma entrega.** Quem for avaliar não precisa achar, clonar e
+  sincronizar dois repositórios pra ter o projeto rodando.
+- **Commits atômicos.** Uma mudança de contrato na API (ex.: um campo novo no
+  JSON de resposta) e o ajuste correspondente no frontend entram no mesmo
+  commit — não tem risco de um repositório ficar "na frente" do outro, nem
+  PR de um lado quebrando silenciosamente o outro.
+- **Zero perda no deploy.** Vercel e Render suportam apontar pra uma
+  subpasta (`frontend/`, `backend/`) de um monorepo normalmente — não existe
+  trade-off real de infraestrutura aqui, só ganho de simplicidade.
+- **Sem overhead de coordenação.** Dois repositórios exigiriam dois remotes,
+  possivelmente duas pipelines de CI e versionamento cruzado (qual tag do
+  backend é compatível com qual tag do frontend?) — custo real que não compra
+  nada de valor num projeto de 3 dias, uma pessoa só.
+
+Ou seja: a razão de separar em múltiplos repositórios é desacoplar o que
+evolui em velocidades e por donos diferentes. Aqui não evolui — então pagar
+o custo de separação sem o benefício que ela existe pra dar seria a escolha
+pior, não a mais "limpa".
 
 ## Como rodar localmente
 
@@ -162,17 +195,37 @@ fictício (`test-only-secret-...`), pra `npm test` funcionar sem setup extra.
   endpoint retorna `404` tanto pra um laudo inexistente quanto pra um rascunho
   ou um laudo de outro paciente — nunca confirma a existência de algo que o
   paciente não deveria ver.
+- **Agenda em visão de dia:** separada em duas seções pra não virar uma tabela
+  gigante — a lista de agendamentos do dia (curta, só o que existe de verdade)
+  e, abaixo, uma grade compacta de "chips" com os horários livres (mesmo
+  padrão visual do seletor de horário da tela de Agendar), cada um já levando
+  pro formulário de novo agendamento com data/horário preenchidos. Os cards de
+  estatística (exames agendados, horários livres, sala) seguem o design
+  system. "Buscar por nome" filtra os agendamentos do dia no cliente (sem
+  campo livre no contrato da API) e, enquanto ativo, esconde a grade de
+  horários livres pra focar na busca.
+- **Central de laudos:** lista a partir dos agendamentos (não dos laudos), pra
+  mostrar também os exames que ainda não têm laudo cadastrado ("Sem laudo" →
+  "Cadastrar"). Só mostra exames que já aconteceram (ou que já têm laudo,
+  por garantia) — um exame futuro "sem laudo" ainda é só prematuro, não uma
+  pendência real, e agendamentos cancelados ficam de fora porque não podem
+  receber laudo. Cada linha mostra "Exame · Paciente" e abre o mesmo fluxo de
+  edição/leitura usado a partir da Agenda.
+- **Badge de situação não é só o status do agendamento:** pra clínica, um
+  agendamento com laudo em rascunho mostra "Rascunho" (não "Agendado") — fica
+  claro que o exame já foi realizado. Pro paciente, que nunca pode saber se
+  existe rascunho, a mesma situação aparece como "Aguardando laudo",
+  calculado só a partir da data do exame (que ele já vê de qualquer forma) e
+  de o laudo estar publicado ou não — nunca a partir da existência do
+  rascunho em si.
+- **Cadastro de paciente define a senha de acesso:** sem envio de e-mail no
+  escopo do desafio, a equipe da clínica define a senha provisória na hora do
+  cadastro (`POST /api/patients`) e repassa pro paciente por fora do sistema.
+- **Logo e favicon:** vêm de `Design System/Auren-Logo/` (variantes principal
+  e negativa, kit de favicon pronto) — não foram recriados do zero.
 
 ## Limitações e pendências
 
-- O filtro de paciente na agenda da clínica é um `<select>` com os pacientes
-  cadastrados (correspondência exata), não uma busca livre por nome como no
-  protótipo visual — o contrato atual da API filtra por `patientId`, não por
-  texto.
-- Não existe uma tela de "todos os laudos" pra clínica (só o laudo vinculado a
-  cada agendamento, via tela de detalhe) — o desafio pede "abrir um
-  agendamento e cadastrar um laudo", que está coberto; uma listagem geral
-  seria um adicional razoável, mas fora do escopo descrito.
 - `publish()` não impede publicar um laudo cujo agendamento foi cancelado
   depois do laudo criado como rascunho — o desafio só proíbe *cadastrar* laudo
   em agendamento cancelado, não trata esse caso específico de edge.
@@ -181,8 +234,10 @@ fictício (`test-only-secret-...`), pra `npm test` funcionar sem setup extra.
 
 ## Tempo dedicado
 
-~1h de sessão (desenvolvimento assistido por IA via Claude Code — "vibe
+~3h de sessão com o Claude Code (desenvolvimento assistido por IA — "vibe
 coding", como pedido no enunciado — cobrindo decisão de arquitetura,
-modelagem, API, testes, frontend e este README). Ajuste este número conforme
-o tempo real que você dedicou acompanhando e revisando a sessão, já que é essa
-a métrica que o enunciado pede.
+modelagem, API, testes, frontend, revisões de UX contra o design system e
+este README), além do tempo à parte gasto no Codex produzindo o design
+system. Ajuste este número conforme o tempo real que você dedicou
+acompanhando e revisando as sessões, já que é essa a métrica que o enunciado
+pede.

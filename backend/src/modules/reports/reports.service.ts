@@ -10,6 +10,7 @@ const include = {
       scheduledAt: true,
       status: true,
       examType: { select: { id: true, name: true } },
+      patient: { select: { id: true, name: true } },
     },
   },
 } satisfies Prisma.ReportInclude;
@@ -31,6 +32,7 @@ function serialize(report: ReportWithAppointment) {
       id: report.appointment.id,
       examType: report.appointment.examType,
       scheduledAt: report.appointment.scheduledAt,
+      patient: report.appointment.patient,
     },
   };
 }
@@ -125,6 +127,15 @@ export async function getForPatient(id: string, patientId: string) {
     throw new NotFoundError("Laudo");
   }
   return serialize(report);
+}
+
+export async function listForClinic(filters: { status?: "DRAFT" | "PUBLISHED" }) {
+  const reports = await prisma.report.findMany({
+    where: filters.status ? { status: filters.status } : undefined,
+    include,
+    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+  });
+  return reports.map(serialize);
 }
 
 export async function listPublishedForPatient(patientId: string) {

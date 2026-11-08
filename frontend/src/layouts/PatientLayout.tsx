@@ -12,7 +12,7 @@ export function PatientLayout() {
     <div className="min-h-screen bg-paper">
       <header className="border-b border-line bg-white px-4 py-4 tablet:px-8">
         <div className="mx-auto flex max-w-3xl items-center justify-between">
-          <AurenLogo />
+          <AurenLogo height={40} />
           <button type="button" onClick={() => void logout()} className="text-sm text-muted hover:text-ink">
             Sair
           </button>

@@ -39,7 +39,7 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-paper px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex justify-center">
-          <AurenLogo />
+          <AurenLogo height={48} />
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 rounded-card border border-line bg-white p-6">

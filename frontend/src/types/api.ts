@@ -54,7 +54,7 @@ export type Report = {
   publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
-  appointment: { id: string; examType: ExamType; scheduledAt: string };
+  appointment: { id: string; examType: ExamType; scheduledAt: string; patient: { id: string; name: string } };
 };
 
 export type Slot = {

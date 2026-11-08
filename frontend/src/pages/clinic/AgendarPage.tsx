@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card } from "../../components/Card";
 import { Select } from "../../components/Select";
 import { Input } from "../../components/Input";
@@ -14,15 +14,25 @@ function todayCivilDate(): string {
   return new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
 }
 
+const DATE_PARAM_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const TIME_PARAM_PATTERN = /^\d{2}:\d{2}$/;
+
 export function AgendarPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const dateParam = searchParams.get("date");
+  const timeParam = searchParams.get("time");
 
   const [patients, setPatients] = useState<Patient[]>([]);
   const [examTypes, setExamTypes] = useState<ExamType[]>([]);
   const [patientId, setPatientId] = useState("");
   const [examTypeId, setExamTypeId] = useState("");
-  const [date, setDate] = useState(todayCivilDate());
-  const [time, setTime] = useState<string | null>(null);
+  const [date, setDate] = useState(
+    dateParam && DATE_PARAM_PATTERN.test(dateParam) ? dateParam : todayCivilDate(),
+  );
+  const [time, setTime] = useState<string | null>(
+    timeParam && TIME_PARAM_PATTERN.test(timeParam) ? timeParam : null,
+  );
   const [slots, setSlots] = useState<Slot[]>([]);
   const [slotsLoading, setSlotsLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -42,10 +52,19 @@ export function AgendarPage() {
 
   useEffect(() => {
     setSlotsLoading(true);
-    setTime(null);
     api
       .get<{ slots: Slot[] }>(`/api/appointments/available-slots?date=${date}`)
-      .then((data) => setSlots(data.slots))
+      .then((data) => {
+        setSlots(data.slots);
+        // Keeps a time selection across a date change only if it's still a
+        // valid, free slot on the new date — otherwise clears it (this also
+        // covers the "?date=&time=" deep link from the agenda's free-slot row).
+        setTime((current) => {
+          if (!current) return current;
+          const stillAvailable = data.slots.some((slot) => slot.time === current && slot.available);
+          return stillAvailable ? current : null;
+        });
+      })
       .finally(() => setSlotsLoading(false));
   }, [date]);
 

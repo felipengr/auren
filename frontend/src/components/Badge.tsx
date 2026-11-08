@@ -18,9 +18,36 @@ export function Badge({ tone, children }: { tone: Tone; children: string }) {
   );
 }
 
-export function AppointmentStatusBadge({ status, hasPublishedReport }: { status: "SCHEDULED" | "CANCELLED"; hasPublishedReport?: boolean }) {
+export function AppointmentStatusBadge({
+  status,
+  reportStatus,
+}: {
+  status: "SCHEDULED" | "CANCELLED";
+  reportStatus?: "DRAFT" | "PUBLISHED";
+}) {
+  if (status === "CANCELLED") return <Badge tone="danger">Cancelado</Badge>;
+  if (reportStatus === "PUBLISHED") return <Badge tone="success">Laudo publicado</Badge>;
+  if (reportStatus === "DRAFT") return <Badge tone="warning">Rascunho</Badge>;
+  return <Badge tone="info">Agendado</Badge>;
+}
+
+/**
+ * Pro paciente nunca sabemos (nem devemos saber) se existe um rascunho — só
+ * se o exame já passou e ainda não tem laudo publicado, o que ele já
+ * consegue ver pela própria data do agendamento.
+ */
+export function PatientAppointmentStatusBadge({
+  status,
+  hasPublishedReport,
+  scheduledAt,
+}: {
+  status: "SCHEDULED" | "CANCELLED";
+  hasPublishedReport: boolean;
+  scheduledAt: string;
+}) {
   if (status === "CANCELLED") return <Badge tone="danger">Cancelado</Badge>;
   if (hasPublishedReport) return <Badge tone="success">Laudo publicado</Badge>;
+  if (new Date(scheduledAt) < new Date()) return <Badge tone="warning">Aguardando laudo</Badge>;
   return <Badge tone="info">Agendado</Badge>;
 }
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card } from "../../components/Card";
-import { AppointmentStatusBadge } from "../../components/Badge";
+import { PatientAppointmentStatusBadge } from "../../components/Badge";
 import { api } from "../../lib/api";
 import { formatCivilDateLong } from "../../lib/format";
 import type { PatientAppointment } from "../../types/api";
@@ -33,7 +33,11 @@ export function MeusExamesPage() {
                   {formatCivilDateLong(appointment.date)} · {appointment.time}
                 </p>
               </div>
-              <AppointmentStatusBadge status={appointment.status} hasPublishedReport={appointment.hasPublishedReport} />
+              <PatientAppointmentStatusBadge
+                status={appointment.status}
+                hasPublishedReport={appointment.hasPublishedReport}
+                scheduledAt={appointment.scheduledAt}
+              />
             </Card>
           ))
         )}

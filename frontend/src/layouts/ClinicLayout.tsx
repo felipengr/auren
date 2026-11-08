@@ -15,7 +15,7 @@ export function ClinicLayout() {
       <aside className="flex flex-col justify-between bg-forest px-4 py-6 tablet:w-56 tablet:px-5 desktop:w-64">
         <div>
           <div className="px-2">
-            <AurenLogo tone="light" />
+            <AurenLogo tone="light" height={48} />
           </div>
           <p className="mt-8 px-2 text-[11px] font-medium tracking-wide text-white/50">ESPAÇO DA CLÍNICA</p>
           <nav className="mt-2 flex gap-1 tablet:flex-col">
@@ -24,6 +24,9 @@ export function ClinicLayout() {
             </NavLink>
             <NavLink to="/pacientes" className={navItemClass}>
               Pacientes
+            </NavLink>
+            <NavLink to="/laudos" className={navItemClass}>
+              Laudos
             </NavLink>
           </nav>
         </div>

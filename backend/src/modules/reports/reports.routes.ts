@@ -10,6 +10,10 @@ const createSchema = z.object({
 
 const updateSchema = createSchema.partial();
 
+const listQuerySchema = z.object({
+  status: z.enum(["DRAFT", "PUBLISHED"]).optional(),
+});
+
 export default async function reportsRoutes(fastify: FastifyInstance) {
   fastify.post(
     "/appointments/:id/report",
@@ -33,6 +37,17 @@ export default async function reportsRoutes(fastify: FastifyInstance) {
           ? await reportsService.getByAppointmentForClinic(id)
           : await reportsService.getByAppointmentForPatient(id, request.user.sub);
       return { report };
+    },
+  );
+
+  // Lista geral de laudos da clínica (tela "Laudos" do design system).
+  fastify.get(
+    "/reports",
+    { preHandler: fastify.requireRole("CLINIC") },
+    async (request) => {
+      const { status } = listQuerySchema.parse(request.query);
+      const reports = await reportsService.listForClinic({ status });
+      return { reports };
     },
   );
 

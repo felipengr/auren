@@ -46,7 +46,7 @@ export async function seedDemoData(): Promise<void> {
   const [raioX, ultrassom, ressonancia] = examTypes;
   if (!raioX || !ultrassom || !ressonancia) throw new Error("seed: expected 3 exam types");
 
-  // Agendamento ativo, sem laudo ainda.
+  // Agendamento futuro, ainda sem laudo — o exame nem aconteceu.
   await prisma.appointment.create({
     data: {
       patientId: ana.id,
@@ -57,14 +57,15 @@ export async function seedDemoData(): Promise<void> {
     },
   });
 
-  // Agendamento com laudo publicado — já visível pro paciente.
+  // Exame já realizado (passado) com laudo publicado — não faria sentido um
+  // laudo existir antes do exame acontecer.
   const withPublishedReport = await prisma.appointment.create({
     data: {
       patientId: bruno.id,
       examTypeId: raioX.id,
-      scheduledAt: inDays(2, "08:30"),
+      scheduledAt: inDays(-3, "08:30"),
       createdById: clinicUser.id,
-      slotKey: inDays(2, "08:30").toISOString(),
+      slotKey: inDays(-3, "08:30").toISOString(),
     },
   });
   await prisma.report.create({
@@ -75,18 +76,18 @@ export async function seedDemoData(): Promise<void> {
         "Estruturas ósseas e partes moles sem alterações significativas. Área cardíaca dentro dos limites da normalidade.",
       professionalName: "Dr. Felipe Andrade",
       status: "PUBLISHED",
-      publishedAt: DateTime.now().toJSDate(),
+      publishedAt: inDays(-2, "10:00"),
     },
   });
 
-  // Agendamento com laudo em rascunho — só a clínica enxerga.
+  // Exame de ontem com laudo ainda em rascunho — só a clínica enxerga.
   const withDraftReport = await prisma.appointment.create({
     data: {
       patientId: clara.id,
       examTypeId: ressonancia.id,
-      scheduledAt: inDays(2, "09:00"),
+      scheduledAt: inDays(-1, "09:00"),
       createdById: clinicUser.id,
-      slotKey: inDays(2, "09:00").toISOString(),
+      slotKey: inDays(-1, "09:00").toISOString(),
     },
   });
   await prisma.report.create({
@@ -99,7 +100,7 @@ export async function seedDemoData(): Promise<void> {
     },
   });
 
-  // Agendamento cancelado — não pode receber laudo.
+  // Agendamento futuro cancelado — não pode receber laudo.
   await prisma.appointment.create({
     data: {
       patientId: daniel.id,

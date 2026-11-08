@@ -8,6 +8,7 @@ import { AgendaPage } from "./pages/clinic/AgendaPage";
 import { AgendarPage } from "./pages/clinic/AgendarPage";
 import { AppointmentDetailPage } from "./pages/clinic/AppointmentDetailPage";
 import { PatientsPage } from "./pages/clinic/PatientsPage";
+import { ReportsPage } from "./pages/clinic/ReportsPage";
 import { PortalPage } from "./pages/patient/PortalPage";
 import { MeusExamesPage } from "./pages/patient/MeusExamesPage";
 import { MeusLaudosPage } from "./pages/patient/MeusLaudosPage";
@@ -33,6 +34,7 @@ export default function App() {
             <Route path="/agenda/novo" element={<AgendarPage />} />
             <Route path="/agendamentos/:id" element={<AppointmentDetailPage />} />
             <Route path="/pacientes" element={<PatientsPage />} />
+            <Route path="/laudos" element={<ReportsPage />} />
           </Route>
         </Route>
 
