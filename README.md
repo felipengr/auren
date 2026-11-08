@@ -85,6 +85,11 @@ Todas com a senha `Auren@123` (gerada pelo seed, sem segredo real envolvido):
 O seed também cria um agendamento ativo, um com laudo publicado, um com laudo
 em rascunho e um cancelado — pra já nascer com estados variados pra explorar.
 
+A equipe da clínica pode cadastrar novos pacientes a qualquer momento — pela
+tela "Pacientes" no menu lateral, ou direto no fluxo de agendamento (atalho
+"+ Cadastrar novo paciente"). O cadastro já define a senha de acesso do
+paciente ao portal (`POST /api/patients`).
+
 ## Variáveis de ambiente
 
 Exemplos sem segredos reais em `backend/.env.example` e `frontend/.env.example`.

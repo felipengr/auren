@@ -22,6 +22,9 @@ export function ClinicLayout() {
             <NavLink to="/agenda" className={navItemClass} end>
               Agenda
             </NavLink>
+            <NavLink to="/pacientes" className={navItemClass}>
+              Pacientes
+            </NavLink>
           </nav>
         </div>
 

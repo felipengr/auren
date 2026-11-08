@@ -12,6 +12,13 @@ export type ExamType = {
   name: string;
 };
 
+export type Patient = {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+};
+
 export type AppointmentStatus = "SCHEDULED" | "CANCELLED";
 export type ReportStatus = "DRAFT" | "PUBLISHED";
 

@@ -7,17 +7,17 @@ import { AppointmentStatusBadge } from "../../components/Badge";
 import { Card } from "../../components/Card";
 import { api } from "../../lib/api";
 import { formatCivilDateLong } from "../../lib/format";
-import type { ClinicAppointment, User } from "../../types/api";
+import type { ClinicAppointment, Patient } from "../../types/api";
 
 export function AgendaPage() {
   const [date, setDate] = useState("");
   const [patientId, setPatientId] = useState("");
-  const [patients, setPatients] = useState<User[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [appointments, setAppointments] = useState<ClinicAppointment[] | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get<{ patients: User[] }>("/api/patients").then((data) => setPatients(data.patients));
+    api.get<{ patients: Patient[] }>("/api/patients").then((data) => setPatients(data.patients));
   }, []);
 
   useEffect(() => {

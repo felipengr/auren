@@ -6,8 +6,9 @@ import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
 import { TimeSlotGrid } from "../../components/TimeSlotGrid";
+import { PatientForm } from "../../components/PatientForm";
 import { ApiError, api } from "../../lib/api";
-import type { ClinicAppointment, ExamType, Slot, User } from "../../types/api";
+import type { ClinicAppointment, ExamType, Patient, Slot } from "../../types/api";
 
 function todayCivilDate(): string {
   return new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
@@ -16,7 +17,7 @@ function todayCivilDate(): string {
 export function AgendarPage() {
   const navigate = useNavigate();
 
-  const [patients, setPatients] = useState<User[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [examTypes, setExamTypes] = useState<ExamType[]>([]);
   const [patientId, setPatientId] = useState("");
   const [examTypeId, setExamTypeId] = useState("");
@@ -26,11 +27,18 @@ export function AgendarPage() {
   const [slotsLoading, setSlotsLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showNewPatientForm, setShowNewPatientForm] = useState(false);
 
   useEffect(() => {
-    api.get<{ patients: User[] }>("/api/patients").then((data) => setPatients(data.patients));
+    api.get<{ patients: Patient[] }>("/api/patients").then((data) => setPatients(data.patients));
     api.get<{ examTypes: ExamType[] }>("/api/exam-types").then((data) => setExamTypes(data.examTypes));
   }, []);
+
+  function handlePatientCreated(patient: Patient) {
+    setPatients((current) => [...current, patient].sort((a, b) => a.name.localeCompare(b.name)));
+    setPatientId(patient.id);
+    setShowNewPatientForm(false);
+  }
 
   useEffect(() => {
     setSlotsLoading(true);
@@ -84,14 +92,34 @@ export function AgendarPage() {
       ) : null}
 
       <Card className="mt-6 flex flex-col gap-5">
-        <Select label="Paciente cadastrado" value={patientId} onChange={(e) => setPatientId(e.target.value)} required>
-          <option value="">Selecione um paciente</option>
-          {patients.map((patient) => (
-            <option key={patient.id} value={patient.id}>
-              {patient.name}
-            </option>
-          ))}
-        </Select>
+        {showNewPatientForm ? (
+          <div>
+            <p className="mb-3 text-sm text-ink">Cadastrar paciente</p>
+            <PatientForm
+              submitLabel="Cadastrar e selecionar"
+              onCreated={handlePatientCreated}
+              onCancel={() => setShowNewPatientForm(false)}
+            />
+          </div>
+        ) : (
+          <div>
+            <Select label="Paciente cadastrado" value={patientId} onChange={(e) => setPatientId(e.target.value)} required>
+              <option value="">Selecione um paciente</option>
+              {patients.map((patient) => (
+                <option key={patient.id} value={patient.id}>
+                  {patient.name}
+                </option>
+              ))}
+            </Select>
+            <button
+              type="button"
+              onClick={() => setShowNewPatientForm(true)}
+              className="mt-2 text-sm font-medium text-forest hover:underline"
+            >
+              + Cadastrar novo paciente
+            </button>
+          </div>
+        )}
 
         <Select label="Tipo de exame" value={examTypeId} onChange={(e) => setExamTypeId(e.target.value)} required>
           <option value="">Selecione o exame</option>
