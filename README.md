@@ -205,7 +205,8 @@ fictício (`test-only-secret-...`), pra `npm test` funcionar sem setup extra.
   `/agenda` não devem cair em 404 num reload).
 - **Backend → Render:** `render.yaml` na raiz descreve o serviço (Blueprint).
   Alternativamente, criar manualmente um Web Service com *Root Directory* =
-  `backend`, build `npm install && npm run build`, start `npm run start:render`.
+  `backend`, build `npm install && npm run build` (o `prisma generate`
+  necessário roda sozinho via hook `prebuild`), start `npm run start:render`.
   Definir `CORS_ORIGIN` com a URL publicada no Vercel depois do primeiro deploy
   do frontend.
 - **Cold start do plano free do Render:** o serviço dorme após inatividade.

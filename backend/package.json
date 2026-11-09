@@ -5,6 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "prebuild": "prisma generate",
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/server.js",
     "start:render": "prisma migrate deploy && tsx prisma/ensure-seeded.ts && node dist/server.js",
