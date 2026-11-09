@@ -292,10 +292,8 @@ fictício (`test-only-secret-...`), pra `npm test` funcionar sem setup extra.
 
 ## Tempo dedicado
 
-~3h de sessão com o Claude Code (desenvolvimento assistido por IA — "vibe
+~4h de sessão com o Claude Code (desenvolvimento assistido por IA — "vibe
 coding", como pedido no enunciado — cobrindo decisão de arquitetura,
 modelagem, API, testes, frontend, revisões de UX contra o design system e
 este README), mais ~1h à parte no Codex produzindo o design system e as
-logos. Ajuste esses números conforme o tempo real que você dedicou
-acompanhando e revisando as sessões, já que é essa a métrica que o enunciado
-pede.
+logos. 
