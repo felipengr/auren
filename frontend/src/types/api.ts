@@ -42,6 +42,7 @@ export type PatientAppointment = {
   scheduledAt: string;
   status: AppointmentStatus;
   hasPublishedReport: boolean;
+  reportId: string | null;
 };
 
 export type Report = {

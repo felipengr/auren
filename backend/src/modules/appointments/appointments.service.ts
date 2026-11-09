@@ -65,6 +65,7 @@ export async function listForPatient(patientId: string) {
 
   return appointments.map((appointment) => {
     const serialized = serializeForClinic(appointment);
+    const hasPublishedReport = serialized.report?.status === "PUBLISHED";
     return {
       id: serialized.id,
       examType: serialized.examType,
@@ -72,7 +73,10 @@ export async function listForPatient(patientId: string) {
       time: serialized.time,
       scheduledAt: serialized.scheduledAt,
       status: serialized.status,
-      hasPublishedReport: serialized.report?.status === "PUBLISHED",
+      hasPublishedReport,
+      // Só exibe o id do laudo quando publicado — rascunho nunca aparece
+      // pro paciente, nem como referência.
+      reportId: hasPublishedReport ? serialized.report!.id : null,
     };
   });
 }
