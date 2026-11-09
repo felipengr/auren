@@ -36,7 +36,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-paper px-4">
+    <main className="flex min-h-screen items-center justify-center bg-paper px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex justify-center">
           <AurenLogo height={48} />
@@ -70,6 +70,6 @@ export function LoginPage() {
           </Button>
         </form>
       </div>
-    </div>
+    </main>
   );
 }

@@ -3,7 +3,6 @@ import { z } from "zod";
 import * as authService from "./auth.service.js";
 import { AUTH_COOKIE_NAME } from "../../plugins/auth.js";
 import { authCookieOptions } from "../../lib/cookie-options.js";
-import { NotFoundError } from "../../lib/errors.js";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -26,9 +25,16 @@ export default async function authRoutes(fastify: FastifyInstance) {
     return { ok: true };
   });
 
-  fastify.get("/auth/me", { preHandler: fastify.authenticate }, async (request) => {
+  // "Quem sou eu" não é um recurso protegido — é a checagem de sessão que a
+  // SPA faz em toda carga de página, inclusive na tela de login, então
+  // "sem sessão" é um resultado esperado (200 + user: null), não um 401.
+  fastify.get("/auth/me", async (request) => {
+    try {
+      await request.jwtVerify();
+    } catch {
+      return { user: null };
+    }
     const user = await authService.getUserById(request.user.sub);
-    if (!user) throw new NotFoundError("Usuário");
     return { user };
   });
 }

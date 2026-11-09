@@ -5,7 +5,14 @@
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- Logo da tela de entrada é o maior elemento visível (LCP) na primeira
+         visita — descobrível direto no HTML em vez de só depois do JS rodar. -->
+    <link rel="preload" as="image" href="/auren-logo-principal.svg" fetchpriority="high" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Auren Clínica & Diagnóstico — agendamento de exames e acesso a laudos para pacientes e equipe da clínica."
+    />
     <title>Auren — Clínica &amp; Diagnóstico</title>
   </head>
   <body>

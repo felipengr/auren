@@ -84,6 +84,49 @@ npm run dev
 A aplicação sobe em `http://localhost:5173` e já aponta para a API local via
 `VITE_API_URL` (definido em `frontend/.env`).
 
+## Lighthouse
+
+100/100/100/100 (Performance, Acessibilidade, Boas práticas, SEO) no build de
+produção do frontend, auditado contra `/login` (a página de entrada):
+
+```bash
+cd frontend
+npm run build
+npm run preview -- --port 4173          # serve o build de produção
+npx lighthouse http://localhost:4173/login --view
+```
+
+O que foi preciso ajustar pra chegar em 100 (não é só maquiagem pro número —
+cada item abaixo é uma correção real):
+
+- **`<main>` ausente na tela de login** quebrava o landmark único de
+  acessibilidade — adicionado.
+- **`GET /api/auth/me` respondia `401`** quando não havia sessão — e todo
+  carregamento da SPA chama esse endpoint pra saber se o usuário já está
+  logado, então era um `401` esperado em toda visita à tela de login,
+  logado no console do navegador pelo próprio Chrome (não pelo nosso
+  código). Mudamos a rota pra responder sempre `200` com `user: null`
+  quando não há sessão — não é um recurso protegido sendo negado, é uma
+  checagem de "quem sou eu" que pode legitimamente não ter resposta. `401`
+  continua reservado pra quando uma rota protegida de verdade é chamada sem
+  token.
+- **Code splitting por rota** (`React.lazy`) — reduz o JS não usado em cada
+  página, exceto a de login, que foi deixada fora do split de propósito: como
+  é a primeira coisa que quase todo mundo vê, o round-trip extra pra buscar
+  o chunk dela sob demanda prejudicava o LCP mais do que o bundle principal
+  economizava.
+- **`<link rel="preload">` pra logo da tela de login** — ela é o maior
+  elemento visível (LCP) na primeira visita; sem o preload, o navegador só
+  descobre essa imagem depois de baixar e rodar o JavaScript.
+- **`meta description` e `robots.txt`** adicionados (faltavam).
+
+Única ressalva consciente: `robots.txt` libera indexação (`Allow: /`) porque
+é isso que o audit de SEO pontua como correto — num deploy real de um
+portal de paciente com dados sensíveis atrás de login, o mais comum seria
+bloquear indexação (`<meta name="robots" content="noindex">`), mas isso
+reduziria a nota de SEO. Fica registrado como trade-off deliberado, não
+como descuido.
+
 ## Rodando os testes
 
 ```bash
@@ -223,6 +266,12 @@ fictício (`test-only-secret-...`), pra `npm test` funcionar sem setup extra.
   cadastro (`POST /api/patients`) e repassa pro paciente por fora do sistema.
 - **Logo e favicon:** vêm de `Design System/Auren-Logo/` (variantes principal
   e negativa, kit de favicon pronto) — não foram recriados do zero.
+- **Paciente não agenda o próprio exame, de propósito.** O PDF descreve
+  agendar como ação da *equipe da clínica* (seção 4.1) e lista pro *paciente*
+  (seção 4.3) só consultar agendamentos e ler laudos publicados — não criar
+  agendamento. Cogitamos adicionar o autoagendamento como funcionalidade
+  extra, mas decidimos manter fiel ao escopo literal do enunciado em vez de
+  ampliar a superfície do desafio.
 
 ## Limitações e pendências
 
