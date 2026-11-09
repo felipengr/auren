@@ -157,9 +157,18 @@ Todas com a senha `Auren@123` (gerada pelo seed, sem segredo real envolvido):
 | Paciente | `bruno.mendes@auren.com` |
 | Paciente | `clara.ribeiro@auren.com` |
 | Paciente | `daniel.santos@auren.com` |
+| Paciente (+ 8 outros) | `<nome.sobrenome>@auren.com` — 12 pacientes no total |
 
-O seed também cria um agendamento ativo, um com laudo publicado, um com laudo
-em rascunho e um cancelado — pra já nascer com estados variados pra explorar.
+O seed gera uma agenda relativa à data em que roda (não datas fixas), pra
+nunca nascer desatualizada:
+
+- **Hoje + os próximos 10 dias úteis** (fins de semana pulados): agenda bem
+  preenchida (~metade dos horários do dia ocupados, variando qual metade a
+  cada dia), com alguns horários livres pra demonstrar o fluxo de agendar, e
+  2 agendamentos já cancelados espalhados no meio.
+- **Os 5 dias úteis anteriores a hoje**: exames já realizados, todos com
+  laudo. O dia útil mais recente (o "ontem") fica com laudo em rascunho; os
+  anteriores, publicados — ~33 laudos no total, a maioria publicada.
 
 A equipe da clínica pode cadastrar novos pacientes a qualquer momento — pela
 tela "Pacientes" no menu lateral, ou direto no fluxo de agendamento (atalho
