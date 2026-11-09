@@ -9,6 +9,16 @@ favicon em `Design System/Auren-Logo/`), produzido com o **Codex**. Toda a
 implementação (backend, frontend e testes) foi feita nesta sessão com o
 **Claude Code**.
 
+## Demo online
+
+- **Aplicação:** https://auren-frontend-ten.vercel.app
+- **API:** https://auren-backend-yooz.onrender.com (health check em `/api/health`)
+
+O backend está no plano free do Render, que dorme após inatividade — a
+primeira requisição depois de um tempo parado pode demorar até ~50s pra
+acordar. Veja [Cold start do plano free do Render](#deploy) se for avaliar
+fora desse período de aquecimento.
+
 ## Stack
 
 - **Frontend:** Vite + React + TypeScript + Tailwind CSS + React Router
@@ -199,16 +209,18 @@ fictício (`test-only-secret-...`), pra `npm test` funcionar sem setup extra.
 
 ## Deploy
 
-- **Frontend → Vercel:** importar o repositório com *Root Directory* = `frontend`,
-  framework Vite (auto-detectado). Definir `VITE_API_URL` apontando pra URL da
-  API no Render. `frontend/vercel.json` já cuida do rewrite de SPA (rotas como
+Já publicado — veja [Demo online](#demo-online). O que segue é como foi feito
+(e como refazer, se precisar).
+
+- **Frontend → Vercel:** repositório importado com *Root Directory* = `frontend`,
+  framework Vite (auto-detectado). `VITE_API_URL` aponta pra URL da API no
+  Render. `frontend/vercel.json` já cuida do rewrite de SPA (rotas como
   `/agenda` não devem cair em 404 num reload).
 - **Backend → Render:** `render.yaml` na raiz descreve o serviço (Blueprint).
   Alternativamente, criar manualmente um Web Service com *Root Directory* =
   `backend`, build `npm install && npm run build` (o `prisma generate`
   necessário roda sozinho via hook `prebuild`), start `npm run start:render`.
-  Definir `CORS_ORIGIN` com a URL publicada no Vercel depois do primeiro deploy
-  do frontend.
+  `CORS_ORIGIN` aponta pra URL publicada no Vercel.
 - **Cold start do plano free do Render:** o serviço dorme após inatividade.
   `GET /api/health` existe justamente pra isso — configure um ping gratuito
   (ex.: [UptimeRobot](https://uptimerobot.com) ou [cron-job.org](https://cron-job.org),
