@@ -13,7 +13,14 @@
     "resolveJsonModule": true,
     "declaration": false,
     "sourceMap": true,
-    "noEmit": true
+    "noEmit": true,
+    // luxon tem um "exports" map sem condição "types", então sob
+    // moduleResolution nodenext o TS às vezes não liga sozinho o pacote ao
+    // @types/luxon (reproduziu só no Linux do Render, nunca localmente) —
+    // aponta direto pro .d.ts real, sem perder a tipagem de verdade.
+    "paths": {
+      "luxon": ["./node_modules/@types/luxon/index.d.ts"]
+    }
   },
   "include": ["src", "tests", "prisma/seed.ts", "prisma/seed-data.ts", "prisma/ensure-seeded.ts", "vitest.config.ts"],
   "exclude": ["node_modules", "dist"]
