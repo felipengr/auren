@@ -305,8 +305,9 @@ Já publicado — veja [Demo online](#demo-online). O que segue é como foi feit
 
 ## Tempo dedicado
 
-~4h de sessão com o Claude Code (desenvolvimento assistido por IA — "vibe
+~6h de sessão com o Claude Code (desenvolvimento assistido por IA — "vibe
 coding", como pedido no enunciado — cobrindo decisão de arquitetura,
-modelagem, API, testes, frontend, revisões de UX contra o design system e
-este README), mais ~1h à parte no Codex produzindo o design system e as
-logos. 
+modelagem, API, testes, frontend, revisões de UX contra o design system,
+deploy e este README), mais ~1h à parte no Codex produzindo o design system
+e as logos, mais ~2h de testes manuais (fluxo completo nas duas contas,
+revisão visual tela a tela e validação do deploy em produção). 
