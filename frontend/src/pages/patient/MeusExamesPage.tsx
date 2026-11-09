@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Card } from "../../components/Card";
-import { PatientAppointmentStatusBadge } from "../../components/Badge";
+import { PatientAppointmentCard } from "../../components/PatientAppointmentCard";
 import { api } from "../../lib/api";
-import { formatCivilDateLong } from "../../lib/format";
 import type { PatientAppointment } from "../../types/api";
 
 export function MeusExamesPage() {
@@ -26,35 +24,7 @@ export function MeusExamesPage() {
         ) : appointments.length === 0 ? (
           <Card className="text-sm text-muted">Você ainda não tem exames agendados.</Card>
         ) : (
-          appointments.map((appointment) => {
-            const content = (
-              <Card
-                className={`flex items-center justify-between gap-4 ${
-                  appointment.reportId ? "transition-colors hover:border-forest" : ""
-                }`}
-              >
-                <div>
-                  <p className="font-medium text-ink">{appointment.examType.name}</p>
-                  <p className="text-sm text-muted">
-                    {formatCivilDateLong(appointment.date)} · {appointment.time}
-                  </p>
-                </div>
-                <PatientAppointmentStatusBadge
-                  status={appointment.status}
-                  hasPublishedReport={appointment.hasPublishedReport}
-                  scheduledAt={appointment.scheduledAt}
-                />
-              </Card>
-            );
-
-            return appointment.reportId ? (
-              <Link key={appointment.id} to={`/laudos/${appointment.reportId}`}>
-                {content}
-              </Link>
-            ) : (
-              <div key={appointment.id}>{content}</div>
-            );
-          })
+          appointments.map((appointment) => <PatientAppointmentCard key={appointment.id} appointment={appointment} />)
         )}
       </div>
     </div>
