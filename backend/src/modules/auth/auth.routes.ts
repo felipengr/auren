@@ -21,7 +21,12 @@ export default async function authRoutes(fastify: FastifyInstance) {
   });
 
   fastify.post("/auth/logout", async (request, reply) => {
-    reply.clearCookie(AUTH_COOKIE_NAME, { path: "/" });
+    // clearCookie precisa dos mesmos atributos usados no setCookie — em
+    // produção isso inclui sameSite: "none" + secure: true. Sem eles, o
+    // navegador descarta o Set-Cookie de limpeza (contexto cross-site exige
+    // SameSite=None+Secure pra aceitar QUALQUER Set-Cookie, inclusive um que
+    // expira o cookie) e a sessão antiga continua válida.
+    reply.clearCookie(AUTH_COOKIE_NAME, authCookieOptions());
     return { ok: true };
   });
 

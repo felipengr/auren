@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { buttonClasses } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { AppointmentStatusBadge } from "../../components/Badge";
 import { Card } from "../../components/Card";
+import { ErrorState } from "../../components/ErrorState";
 import { api } from "../../lib/api";
+import { useApiResource } from "../../lib/useApiResource";
 import { formatCivilDateLong } from "../../lib/format";
 import type { ClinicAppointment, Slot } from "../../types/api";
 
@@ -22,23 +24,21 @@ function addDays(date: string, delta: number): string {
 export function AgendaPage() {
   const [date, setDate] = useState(todayCivilDate());
   const [nameQuery, setNameQuery] = useState("");
-  const [slots, setSlots] = useState<Slot[]>([]);
-  const [dayAppointments, setDayAppointments] = useState<ClinicAppointment[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setLoading(true);
-    Promise.all([
-      api.get<{ slots: Slot[] }>(`/api/appointments/available-slots?date=${date}`),
-      api.get<{ appointments: ClinicAppointment[] }>(`/api/appointments?date=${date}`),
-    ])
-      .then(([slotsData, appointmentsData]) => {
-        setSlots(slotsData.slots);
-        setDayAppointments(appointmentsData.appointments);
-      })
-      .finally(() => setLoading(false));
-  }, [date]);
+  const day = useApiResource(
+    () =>
+      Promise.all([
+        api.get<{ slots: Slot[] }>(`/api/appointments/available-slots?date=${date}`),
+        api.get<{ appointments: ClinicAppointment[] }>(`/api/appointments?date=${date}`),
+      ]).then(([slotsData, appointmentsData]) => ({
+        slots: slotsData.slots,
+        appointments: appointmentsData.appointments,
+      })),
+    [date],
+  );
 
+  const slots = day.status === "ready" ? day.data.slots : [];
+  const dayAppointments = day.status === "ready" ? day.data.appointments : [];
   const scheduledCount = dayAppointments.filter((a) => a.status === "SCHEDULED").length;
   const freeSlots = slots.filter((s) => s.available);
 
@@ -118,8 +118,10 @@ export function AgendaPage() {
         {formatCivilDateLong(date)} <span className="font-normal text-muted">· Sala única · intervalos de 30 min</span>
       </p>
 
-      {loading ? (
+      {day.status === "loading" ? (
         <p className="text-sm text-muted">Carregando…</p>
+      ) : day.status === "error" ? (
+        <ErrorState onRetry={day.reload} />
       ) : (
         <>
           {visibleAppointments.length === 0 ? (

@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Card } from "../../components/Card";
 import { Select } from "../../components/Select";
 import { Badge } from "../../components/Badge";
 import { buttonClasses } from "../../components/Button";
+import { ErrorState } from "../../components/ErrorState";
 import { api } from "../../lib/api";
+import { useApiResource } from "../../lib/useApiResource";
 import { formatInstantShort } from "../../lib/format";
 import type { ClinicAppointment, Patient } from "../../types/api";
 
@@ -24,32 +26,21 @@ function reportActionLabel(appointment: ClinicAppointment) {
 
 export function ReportsPage() {
   const [patientId, setPatientId] = useState("");
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [appointments, setAppointments] = useState<ClinicAppointment[] | null>(null);
-  const [loading, setLoading] = useState(true);
+  const patients = useApiResource(() => api.get<{ patients: Patient[] }>("/api/patients").then((data) => data.patients));
 
-  useEffect(() => {
-    api.get<{ patients: Patient[] }>("/api/patients").then((data) => setPatients(data.patients));
-  }, []);
-
-  useEffect(() => {
-    setLoading(true);
+  const appointments = useApiResource(() => {
     const query = patientId ? `?patientId=${patientId}` : "";
-    api
-      .get<{ appointments: ClinicAppointment[] }>(`/api/appointments${query}`)
-      .then((data) => {
-        const now = new Date();
-        // Só exames que já aconteceram fazem sentido aqui — um exame futuro
-        // "sem laudo" é só prematuro, não uma pendência real (e o paciente
-        // pode nem ter comparecido ainda). Um relatório já existente conta
-        // como relevante mesmo que a data, por algum motivo, ainda não tenha
-        // passado.
-        const relevant = data.appointments.filter(
-          (a) => a.status !== "CANCELLED" && (a.report !== null || new Date(a.scheduledAt) <= now),
-        );
-        setAppointments(relevant);
-      })
-      .finally(() => setLoading(false));
+    return api.get<{ appointments: ClinicAppointment[] }>(`/api/appointments${query}`).then((data) => {
+      const now = new Date();
+      // Só exames que já aconteceram fazem sentido aqui — um exame futuro
+      // "sem laudo" é só prematuro, não uma pendência real (e o paciente
+      // pode nem ter comparecido ainda). Um relatório já existente conta
+      // como relevante mesmo que a data, por algum motivo, ainda não tenha
+      // passado.
+      return data.appointments.filter(
+        (a) => a.status !== "CANCELLED" && (a.report !== null || new Date(a.scheduledAt) <= now),
+      );
+    });
   }, [patientId]);
 
   return (
@@ -60,7 +51,7 @@ export function ReportsPage() {
       <Card className="mt-6">
         <Select label="Buscar paciente" value={patientId} onChange={(e) => setPatientId(e.target.value)}>
           <option value="">Todos os pacientes</option>
-          {patients.map((patient) => (
+          {(patients.status === "ready" ? patients.data : []).map((patient) => (
             <option key={patient.id} value={patient.id}>
               {patient.name}
             </option>
@@ -69,12 +60,14 @@ export function ReportsPage() {
       </Card>
 
       <div className="mt-6 flex flex-col gap-3">
-        {loading ? (
+        {appointments.status === "loading" ? (
           <p className="text-sm text-muted">Carregando…</p>
-        ) : !appointments || appointments.length === 0 ? (
+        ) : appointments.status === "error" ? (
+          <ErrorState onRetry={appointments.reload} />
+        ) : appointments.data.length === 0 ? (
           <Card className="text-sm text-muted">Nenhum exame encontrado para esse filtro.</Card>
         ) : (
-          appointments.map((appointment) => (
+          appointments.data.map((appointment) => (
             <Card key={appointment.id} className="flex items-center justify-between gap-4">
               <div>
                 <p className="font-medium text-ink">

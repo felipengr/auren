@@ -1,26 +1,26 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card } from "../../components/Card";
+import { ErrorState } from "../../components/ErrorState";
 import { PatientAppointmentCard } from "../../components/PatientAppointmentCard";
 import { api } from "../../lib/api";
+import { useApiResource } from "../../lib/useApiResource";
 import { useAuth } from "../../lib/auth-context";
 import { formatCivilDateLong } from "../../lib/format";
 import type { PatientAppointment } from "../../types/api";
 
 export function PortalPage() {
   const { user } = useAuth();
-  const [appointments, setAppointments] = useState<PatientAppointment[] | null>(null);
-
-  useEffect(() => {
-    api
-      .get<{ appointments: PatientAppointment[] }>("/api/appointments/mine")
-      .then((data) => setAppointments(data.appointments));
-  }, []);
+  const appointments = useApiResource(() =>
+    api.get<{ appointments: PatientAppointment[] }>("/api/appointments/mine").then((data) => data.appointments),
+  );
 
   const now = new Date();
-  const nextAppointment = appointments?.find(
-    (appointment) => appointment.status === "SCHEDULED" && new Date(appointment.scheduledAt) >= now,
-  );
+  const nextAppointment =
+    appointments.status === "ready"
+      ? appointments.data.find(
+          (appointment) => appointment.status === "SCHEDULED" && new Date(appointment.scheduledAt) >= now,
+        )
+      : undefined;
 
   return (
     <div>
@@ -42,12 +42,16 @@ export function PortalPage() {
 
       <h2 className="mt-8 font-display text-xl text-ink">Sua jornada de cuidado</h2>
       <div className="mt-3 flex flex-col gap-3">
-        {!appointments ? (
+        {appointments.status === "loading" ? (
           <p className="text-sm text-muted">Carregando…</p>
-        ) : appointments.length === 0 ? (
+        ) : appointments.status === "error" ? (
+          <ErrorState onRetry={appointments.reload} />
+        ) : appointments.data.length === 0 ? (
           <Card className="text-sm text-muted">Você ainda não tem exames agendados.</Card>
         ) : (
-          appointments.map((appointment) => <PatientAppointmentCard key={appointment.id} appointment={appointment} />)
+          appointments.data.map((appointment) => (
+            <PatientAppointmentCard key={appointment.id} appointment={appointment} />
+          ))
         )}
       </div>
     </div>

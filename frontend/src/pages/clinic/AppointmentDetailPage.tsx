@@ -1,46 +1,36 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Card } from "../../components/Card";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { Textarea } from "../../components/Textarea";
 import { Alert } from "../../components/Alert";
+import { ErrorState } from "../../components/ErrorState";
 import { AppointmentStatusBadge, ReportStatusBadge } from "../../components/Badge";
 import { ApiError, api } from "../../lib/api";
+import { useApiResource } from "../../lib/useApiResource";
 import { formatCivilDateLong, formatPublishedAt } from "../../lib/format";
 import type { ClinicAppointment, Report } from "../../types/api";
 
 export function AppointmentDetailPage() {
   const { id } = useParams<{ id: string }>();
-
-  const [appointment, setAppointment] = useState<ClinicAppointment | null>(null);
-  const [report, setReport] = useState<Report | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
-  async function load() {
-    if (!id) return;
-    setLoading(true);
-    const [appointmentResult, reportResult] = await Promise.all([
-      api.get<{ appointment: ClinicAppointment }>(`/api/appointments/${id}`),
-      api
-        .get<{ report: Report }>(`/api/appointments/${id}/report`)
-        .then((data) => data.report)
-        .catch((err) => {
-          if (err instanceof ApiError && err.status === 404) return null;
-          throw err;
-        }),
-    ]);
-    setAppointment(appointmentResult.appointment);
-    setReport(reportResult);
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  const detail = useApiResource(
+    () =>
+      Promise.all([
+        api.get<{ appointment: ClinicAppointment }>(`/api/appointments/${id}`),
+        api
+          .get<{ report: Report }>(`/api/appointments/${id}/report`)
+          .then((data) => data.report)
+          .catch((err) => {
+            if (err instanceof ApiError && err.status === 404) return null;
+            throw err;
+          }),
+      ]).then(([appointmentResult, report]) => ({ appointment: appointmentResult.appointment, report })),
+    [id],
+  );
 
   async function handleCancel() {
     if (!id) return;
@@ -48,15 +38,21 @@ export function AppointmentDetailPage() {
     try {
       await api.delete(`/api/appointments/${id}`);
       setNotice("Agendamento cancelado.");
-      await load();
+      detail.reload();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Não foi possível cancelar.");
     }
   }
 
-  if (loading || !appointment) {
+  if (detail.status === "loading") {
     return <p className="text-sm text-muted">Carregando…</p>;
   }
+
+  if (detail.status === "error") {
+    return <ErrorState onRetry={detail.reload} />;
+  }
+
+  const { appointment, report } = detail.data;
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -99,7 +95,7 @@ export function AppointmentDetailPage() {
           {appointment.status === "CANCELLED" && !report ? (
             <Card className="text-sm text-muted">Agendamentos cancelados não podem receber laudo.</Card>
           ) : (
-            <ReportSection appointmentId={appointment.id} report={report} onChanged={load} />
+            <ReportSection appointmentId={appointment.id} report={report} onChanged={detail.reload} />
           )}
         </div>
       </div>
@@ -114,7 +110,7 @@ function ReportSection({
 }: {
   appointmentId: string;
   report: Report | null;
-  onChanged: () => Promise<void>;
+  onChanged: () => void;
 }) {
   const [editing, setEditing] = useState(!report);
   const [title, setTitle] = useState(report?.title ?? "");
@@ -154,11 +150,14 @@ function ReportSection({
           </Button>
           <Button
             onClick={async () => {
+              // Publicar é irreversível (o paciente passa a ver o laudo na
+              // hora) — confirma antes de mandar pro ar.
+              if (!window.confirm("Publicar este laudo? O paciente poderá vê-lo imediatamente.")) return;
               setSaving(true);
               setError(null);
               try {
                 await api.post(`/api/reports/${report.id}/publish`);
-                await onChanged();
+                onChanged();
               } catch (err) {
                 setError(err instanceof ApiError ? err.message : "Não foi possível publicar.");
               } finally {
@@ -189,7 +188,7 @@ function ReportSection({
         await api.post(`/api/appointments/${appointmentId}/report`, { title, content, professionalName });
       }
       setEditing(false);
-      await onChanged();
+      onChanged();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Não foi possível salvar o rascunho.");
     } finally {

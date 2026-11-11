@@ -1,20 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card } from "../../components/Card";
 import { Button } from "../../components/Button";
+import { ErrorState } from "../../components/ErrorState";
 import { PatientForm } from "../../components/PatientForm";
 import { api } from "../../lib/api";
+import { useApiResource } from "../../lib/useApiResource";
 import { formatPublishedAt } from "../../lib/format";
 import type { Patient } from "../../types/api";
 
 export function PatientsPage() {
-  const [patients, setPatients] = useState<Patient[] | null>(null);
+  const patients = useApiResource(() => api.get<{ patients: Patient[] }>("/api/patients").then((data) => data.patients));
   const [showForm, setShowForm] = useState(false);
-
-  function load() {
-    api.get<{ patients: Patient[] }>("/api/patients").then((data) => setPatients(data.patients));
-  }
-
-  useEffect(load, []);
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -31,7 +27,7 @@ export function PatientsPage() {
           <PatientForm
             onCreated={() => {
               setShowForm(false);
-              load();
+              patients.reload();
             }}
             onCancel={() => setShowForm(false)}
           />
@@ -39,12 +35,14 @@ export function PatientsPage() {
       ) : null}
 
       <div className="mt-6 flex flex-col gap-3">
-        {!patients ? (
+        {patients.status === "loading" ? (
           <p className="text-sm text-muted">Carregando…</p>
-        ) : patients.length === 0 ? (
+        ) : patients.status === "error" ? (
+          <ErrorState onRetry={patients.reload} />
+        ) : patients.data.length === 0 ? (
           <Card className="text-sm text-muted">Nenhum paciente cadastrado ainda.</Card>
         ) : (
-          patients.map((patient) => (
+          patients.data.map((patient) => (
             <Card key={patient.id} className="flex items-center justify-between gap-4">
               <div>
                 <p className="font-medium text-ink">{patient.name}</p>

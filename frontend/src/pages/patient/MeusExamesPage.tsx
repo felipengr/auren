@@ -1,17 +1,14 @@
-import { useEffect, useState } from "react";
 import { Card } from "../../components/Card";
+import { ErrorState } from "../../components/ErrorState";
 import { PatientAppointmentCard } from "../../components/PatientAppointmentCard";
 import { api } from "../../lib/api";
+import { useApiResource } from "../../lib/useApiResource";
 import type { PatientAppointment } from "../../types/api";
 
 export function MeusExamesPage() {
-  const [appointments, setAppointments] = useState<PatientAppointment[] | null>(null);
-
-  useEffect(() => {
-    api
-      .get<{ appointments: PatientAppointment[] }>("/api/appointments/mine")
-      .then((data) => setAppointments(data.appointments));
-  }, []);
+  const appointments = useApiResource(() =>
+    api.get<{ appointments: PatientAppointment[] }>("/api/appointments/mine").then((data) => data.appointments),
+  );
 
   return (
     <div>
@@ -19,12 +16,16 @@ export function MeusExamesPage() {
       <p className="mt-1 text-sm text-muted">Seus agendamentos, com tipo de exame, data e situação.</p>
 
       <div className="mt-6 flex flex-col gap-3">
-        {!appointments ? (
+        {appointments.status === "loading" ? (
           <p className="text-sm text-muted">Carregando…</p>
-        ) : appointments.length === 0 ? (
+        ) : appointments.status === "error" ? (
+          <ErrorState onRetry={appointments.reload} />
+        ) : appointments.data.length === 0 ? (
           <Card className="text-sm text-muted">Você ainda não tem exames agendados.</Card>
         ) : (
-          appointments.map((appointment) => <PatientAppointmentCard key={appointment.id} appointment={appointment} />)
+          appointments.data.map((appointment) => (
+            <PatientAppointmentCard key={appointment.id} appointment={appointment} />
+          ))
         )}
       </div>
     </div>

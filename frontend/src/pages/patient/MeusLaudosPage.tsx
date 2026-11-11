@@ -1,16 +1,15 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card } from "../../components/Card";
+import { ErrorState } from "../../components/ErrorState";
 import { api } from "../../lib/api";
+import { useApiResource } from "../../lib/useApiResource";
 import { formatPublishedAt } from "../../lib/format";
 import type { Report } from "../../types/api";
 
 export function MeusLaudosPage() {
-  const [reports, setReports] = useState<Report[] | null>(null);
-
-  useEffect(() => {
-    api.get<{ reports: Report[] }>("/api/reports/mine").then((data) => setReports(data.reports));
-  }, []);
+  const reports = useApiResource(() =>
+    api.get<{ reports: Report[] }>("/api/reports/mine").then((data) => data.reports),
+  );
 
   return (
     <div>
@@ -18,12 +17,14 @@ export function MeusLaudosPage() {
       <p className="mt-1 text-sm text-muted">Laudos publicados, disponíveis para leitura.</p>
 
       <div className="mt-6 flex flex-col gap-3">
-        {!reports ? (
+        {reports.status === "loading" ? (
           <p className="text-sm text-muted">Carregando…</p>
-        ) : reports.length === 0 ? (
+        ) : reports.status === "error" ? (
+          <ErrorState onRetry={reports.reload} />
+        ) : reports.data.length === 0 ? (
           <Card className="text-sm text-muted">Nenhum laudo publicado até o momento.</Card>
         ) : (
-          reports.map((report) => (
+          reports.data.map((report) => (
             <Link key={report.id} to={`/laudos/${report.id}`}>
               <Card className="transition-colors hover:border-forest">
                 <p className="font-medium text-ink">{report.title}</p>
