@@ -118,6 +118,21 @@ function ReportSection({
   const [professionalName, setProfessionalName] = useState(report?.professionalName ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmingPublish, setConfirmingPublish] = useState(false);
+
+  async function handlePublish() {
+    setSaving(true);
+    setError(null);
+    try {
+      await api.post(`/api/reports/${report!.id}/publish`);
+      onChanged();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Não foi possível publicar.");
+    } finally {
+      setSaving(false);
+      setConfirmingPublish(false);
+    }
+  }
 
   if (report?.status === "PUBLISHED") {
     return (
@@ -144,31 +159,26 @@ function ReportSection({
         </div>
         <p className="text-xs text-muted">Profissional responsável: {report.professionalName}</p>
         <p className="mt-2 whitespace-pre-wrap text-sm text-ink">{report.content}</p>
-        <div className="mt-3 flex gap-3">
-          <Button variant="secondary" onClick={() => setEditing(true)}>
-            Editar rascunho
-          </Button>
-          <Button
-            onClick={async () => {
-              // Publicar é irreversível (o paciente passa a ver o laudo na
-              // hora) — confirma antes de mandar pro ar.
-              if (!window.confirm("Publicar este laudo? O paciente poderá vê-lo imediatamente.")) return;
-              setSaving(true);
-              setError(null);
-              try {
-                await api.post(`/api/reports/${report.id}/publish`);
-                onChanged();
-              } catch (err) {
-                setError(err instanceof ApiError ? err.message : "Não foi possível publicar.");
-              } finally {
-                setSaving(false);
-              }
-            }}
-            disabled={saving}
-          >
-            {saving ? "Publicando…" : "Publicar laudo"}
-          </Button>
-        </div>
+        {confirmingPublish ? (
+          <div className="mt-1 rounded-control border border-line bg-paper p-3">
+            <p className="text-sm text-ink">Publicar este laudo? O paciente poderá vê-lo imediatamente.</p>
+            <div className="mt-3 flex gap-3">
+              <Button variant="secondary" onClick={() => setConfirmingPublish(false)} disabled={saving}>
+                Cancelar
+              </Button>
+              <Button onClick={() => void handlePublish()} disabled={saving}>
+                {saving ? "Publicando…" : "Sim, publicar"}
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-3 flex gap-3">
+            <Button variant="secondary" onClick={() => setEditing(true)}>
+              Editar rascunho
+            </Button>
+            <Button onClick={() => setConfirmingPublish(true)}>Publicar laudo</Button>
+          </div>
+        )}
         {error ? (
           <div className="mt-2">
             <Alert variant="error" title={error} />
